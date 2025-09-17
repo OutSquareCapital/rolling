@@ -1,6 +1,6 @@
 from collections import Counter, deque
 from itertools import islice
-
+from typing import Any
 from rolling.base import RollingObject
 
 
@@ -39,23 +39,23 @@ class Sum(RollingObject):
     [13, 11, 15]
 
     """
-    def _init_fixed(self):
+    def _init_fixed(self) -> None:
         head = islice(self._iterator, self.window_size - 1)
         self._buffer = deque(head, maxlen=self.window_size)
         self._buffer.appendleft(0)
-        self._sum = sum(self._buffer)
+        self._sum: int = sum(self._buffer)
 
-    def _init_variable(self):
-        self._buffer = deque()
+    def _init_variable(self) -> None:
+        self._buffer: deque[int] = deque()
         self._sum = 0
 
     _init_indexed = _init_variable
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         self._sum += new - self._buffer.popleft()
         self._buffer.append(new)
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._sum += new
         self._buffer.append(new)
 
@@ -63,9 +63,9 @@ class Sum(RollingObject):
         self._sum -= self._buffer.popleft()
 
     @property
-    def current_value(self):
+    def current_value(self) -> int:
         return self._sum
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)

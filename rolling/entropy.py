@@ -1,11 +1,11 @@
 from collections import Counter, deque
 from itertools import islice
 from math import fsum, log2, log10, log
-
+from collections.abc import Iterable, Mapping, Hashable
 from rolling.base import RollingObject
 
 
-def _get_log_func(base):
+def _get_log_func(base: int | float | str):
     if base == 2:
         return log2
     if base == 10:
@@ -15,7 +15,7 @@ def _get_log_func(base):
     return lambda x: log(x, base)
 
 
-def entropy(seq, base=2, reference_distribution=None):
+def entropy(seq, base: int=2, reference_distribution: Mapping[Hashable, float] | None=None):
     N = len(seq)
     counts = Counter(seq)
     _log = _get_log_func(base)
@@ -27,7 +27,7 @@ def entropy(seq, base=2, reference_distribution=None):
     )
 
 
-class Entropy(RollingObject):
+class Entropy[T](RollingObject[T]):
     """
     Entropy of a rolling window.
 
@@ -79,7 +79,7 @@ class Entropy(RollingObject):
      ...]
 
     """
-    def __init__(self, iterable, window_size, base=2, reference_distribution=None):
+    def __init__(self, iterable: Iterable[T], window_size: int, base: int=2, reference_distribution : Mapping[Hashable, float] | None=None):
         if reference_distribution is not None and sum(reference_distribution.values()) != 1:
             raise ValueError("reference_distribution probabilities must sum to 1")
         self.reference_distribution = reference_distribution
@@ -139,18 +139,18 @@ class Entropy(RollingObject):
         return p * self._log(p / self.reference_distribution[value])
 
     @property
-    def current_value(self):
+    def current_value(self) -> float:
         return abs(self._entropy)
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
 
     # Required, but unused as variable windows not supported
-    def _add_new(self):
+    def _add_new(self) -> None:
         pass
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         pass
 
     def _init_indexed(self):

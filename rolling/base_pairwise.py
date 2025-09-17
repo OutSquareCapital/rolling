@@ -1,14 +1,16 @@
 import abc
+from typing import Any
 from collections.abc import Iterator
 from itertools import chain
+from collections.abc import Iterable
+from .base import WindowType
 
-
-class RollingPairwise(Iterator):
+class RollingPairwise(Iterator[Any]):
     """
     Baseclass for rolling iterators over two iterables.
 
     """
-    def __init__(self, iterable_1, iterable_2, window_size, window_type="fixed"):
+    def __init__(self, iterable_1: Iterable[Any], iterable_2: Iterable[Any], window_size: int, window_type: WindowType="fixed"):
         self.window_type = window_type
         self.window_size = _validate_window_size(window_size)
         self._iterator_1 = iter(iterable_1)
@@ -118,12 +120,10 @@ class RollingPairwise(Iterator):
         pass
 
 
-def _validate_window_size(k):
+def _validate_window_size(k: int):
     """
     Check if k is a positive integer
     """
-    if not isinstance(k, int):
-        raise TypeError(f"window_size must be integer type, got {type(k).__name__}")
     if k <= 0:
         raise ValueError("window_size must be positive")
     return k

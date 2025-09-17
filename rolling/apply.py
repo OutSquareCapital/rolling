@@ -1,7 +1,9 @@
 from collections import deque
 from itertools import islice
+from collections.abc import Iterable, Callable
+from typing import Any
 
-from .base import RollingObject
+from .base import RollingObject, WindowType
 
 
 class Apply(RollingObject):
@@ -49,38 +51,38 @@ class Apply(RollingObject):
      [5, 6, 3, 1]]
 
     """
-    def __init__(self, iterable, window_size, window_type="fixed", operation=sum):
+    def __init__(self, iterable: Iterable[Any], window_size: int, window_type: WindowType = "fixed", operation: Callable[..., Any]=sum):
         super().__init__(iterable, window_size, window_type)
         self._operation = operation
 
-    def _init_fixed(self):
+    def _init_fixed(self) -> None:
         self._buffer = deque([None])
         self._buffer.extend(islice(self._iterator, self.window_size - 1))
 
-    def _init_variable(self):
-        self._buffer = deque()
+    def _init_variable(self) -> None:
+        self._buffer: deque[Any] = deque()
 
-    _init_indexed = _init_variable
+    _init_indexed: Callable[..., None] = _init_variable
 
     @property
     def current_value(self):
         return self._operation(self._buffer)
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._buffer.append(new)
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         self._buffer.popleft()
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         self._add_new(new)
         self._remove_old()
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return "Rolling(operation='{}', window_size={}, window_type='{}')".format(
             self._operation.__name__, self.window_size, self.window_type
         )

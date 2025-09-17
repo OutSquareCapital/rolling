@@ -1,8 +1,8 @@
 from collections import defaultdict
-from collections.abc import Mapping
+from collections.abc import Mapping, Iterable
+from typing import Any
 
-
-class BiCounter(Mapping):
+class BiCounter(Mapping[Any, Any]):
     """
     Bi-directional counter.
 
@@ -31,9 +31,9 @@ class BiCounter(Mapping):
 
     """
 
-    def __init__(self, iterable=None):
-        self.item_to_freq = defaultdict(lambda: 0)
-        self.freq_to_items = defaultdict(set)
+    def __init__(self, iterable: Iterable[Any] | None=None) -> None:
+        self.item_to_freq: defaultdict[Any, int] = defaultdict(lambda: 0)
+        self.freq_to_items: defaultdict[int, set[Any]] = defaultdict(set)
         self.largest_count = 0
         if iterable is not None:
             for item in iterable:

@@ -26,12 +26,12 @@ and allows a value to be retrieved by rank.
 """
 from random import random
 from math import log, ceil
-
+from typing import Any
 
 class Node(object):
     __slots__ = "value", "next", "width"
 
-    def __init__(self, value, next, width):
+    def __init__(self, value: Any, next: Any, width: Any):
         self.value, self.next, self.width = value, next, width
 
 
@@ -58,12 +58,12 @@ class IndexableSkiplist(object):
     Sorted collection supporting O(lg n) insertion, removal, and lookup by rank.
     """
 
-    def __init__(self, expected_size):
+    def __init__(self, expected_size: int):
         self.size = 0
         self.maxlevels = int(1 + log(expected_size, 2))
         self.head = Node("HEAD", [NIL] * self.maxlevels, [1] * self.maxlevels)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i: int):
         node = self.head
         i += 1
         for level in reversed(range(self.maxlevels)):
@@ -84,7 +84,7 @@ class IndexableSkiplist(object):
             chain[level] = node
 
         # insert a link to the newnode at each level
-        d = min(self.maxlevels, 1 - int(log(random(), 2.0)))
+        d: int = min(self.maxlevels, 1 - int(log(random(), 2.0)))
         newnode = Node(value, [None] * d, [None] * d)
         steps = 0
         for level in range(d):

@@ -1,7 +1,8 @@
 import operator
-
+from collections.abc import Iterable
+from typing import Any
 from rolling.logical.all import All
-
+from .base import WindowType
 
 COMPARE = {
     # (increasing, strict): cmp
@@ -50,12 +51,12 @@ class Monotonic(All):
 
     def __init__(
         self,
-        iterable,
-        window_size,
-        window_type="fixed",
-        increasing=True,
-        strict=False,
-        initial=None,
+        iterable: Iterable[Any],
+        window_size: int,
+        window_type: WindowType="fixed",
+        increasing: bool=True,
+        strict: bool=False,
+        initial: Any=None,
     ):
         self._compare = COMPARE[(increasing, strict)]
 

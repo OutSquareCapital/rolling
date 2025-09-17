@@ -1,10 +1,12 @@
 from collections import Counter, deque
 from itertools import islice
+from collections.abc import Hashable, Iterable, Sequence
+from typing import Any
+from collections.abc import Callable
+from .base import RollingObject, WindowType
 
-from .base import RollingObject
 
-
-def jaccard_index(a, b):
+def jaccard_index(a, b) -> float:
     a_set = set(a)
     b_set = set(b)
     return len(a_set & b_set) / len(a_set | b_set)
@@ -56,13 +58,13 @@ class JaccardIndex(RollingObject):
      0.125]
 
     """
-    def __init__(self, iterable, window_size, target_set, window_type="fixed"):
-        self._target_set = frozenset(target_set)
+    def __init__(self, iterable: Iterable[Any], window_size: int, target_set: Sequence[Hashable], window_type: WindowType="fixed"):
+        self._target_set: frozenset[Hashable] = frozenset(target_set)
         if not self._target_set:
             raise ValueError("target_set cannot be empty")
         self._buffer = deque()
-        self._intersection = Counter()
-        self._union = Counter(self._target_set)
+        self._intersection: Counter[int] = Counter()
+        self._union: Counter[Hashable] = Counter(self._target_set)
         super().__init__(iterable, window_size, window_type)
 
     def _init_fixed(self):
@@ -73,15 +75,15 @@ class JaccardIndex(RollingObject):
     def _init_variable(self):
         pass
 
-    _init_indexed = _init_variable
+    _init_indexed: Callable[..., None] = _init_variable
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._buffer.append(new)
         self._union[new] += 1
         if new in self._target_set:
            self._intersection[new] += 1 
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
         for mapping in (self._intersection, self._union):
             if old in mapping:
@@ -90,14 +92,14 @@ class JaccardIndex(RollingObject):
                 else:
                     mapping[old] -= 1
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         self._remove_old()
         self._add_new(new)
 
     @property
-    def current_value(self):
+    def current_value(self) -> float:
         return len(self._intersection) / len(self._union)
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)

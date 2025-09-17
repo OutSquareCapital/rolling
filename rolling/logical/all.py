@@ -39,38 +39,38 @@ class All(RollingObject):
 
     """
 
-    def _init_fixed(self):
+    def _init_fixed(self) -> None:
         self._i = -1
         self._window_obs = 1
         self._last_false = -1
         for new in islice(self._iterator, self.window_size - 1):
             self._add_new(new)
 
-    def _init_variable(self):
+    def _init_variable(self) -> None:
         self._i = -1
         self._window_obs = 0
         self._last_false = -1
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._i += 1
         self._window_obs += 1
         if not new:
-            self._last_false = self._i
+            self._last_false: int = self._i
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         self._i += 1
         if not new:
             self._last_false = self._i
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         self._window_obs -= 1
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return self._window_obs
 
     @property
-    def current_value(self):
+    def current_value(self) -> bool:
         return self._i - self._window_obs >= self._last_false
 
     def _init_indexed(self):

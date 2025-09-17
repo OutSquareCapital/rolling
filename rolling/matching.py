@@ -1,7 +1,7 @@
 from collections import defaultdict
-
 from .hash import PolynomialHash, polynomial_hash_sequence, DEF_BASE, DEF_MOD
-
+from collections.abc import Iterable, Sequence
+from typing import Any
 
 class Match(PolynomialHash):
     """
@@ -48,7 +48,7 @@ class Match(PolynomialHash):
     [False, False, True, False, False, False, False, True]
     """
 
-    def __init__(self, iterable, match, base=DEF_BASE, mod=DEF_MOD):
+    def __init__(self, iterable: Sequence[Any], match: Sequence[Sequence[Any]], base: int=DEF_BASE, mod: int=DEF_MOD) -> None:
 
         self.match = match
 

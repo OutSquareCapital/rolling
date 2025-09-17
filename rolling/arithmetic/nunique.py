@@ -1,6 +1,6 @@
 from collections import Counter, deque
 from itertools import islice
-
+from typing import Any
 from rolling.base import RollingObject
 
 
@@ -40,37 +40,37 @@ class Nunique(RollingObject):
 
     """
 
-    def _init_fixed(self):
+    def _init_fixed(self) -> None:
         head = islice(self._iterator, self.window_size - 1)
         self._buffer = deque(head)
         # append a dummy value that is removed when next() is called
         self._buffer.appendleft("dummy_value")
         self._counter = Counter(self._buffer)
 
-    def _init_variable(self):
-        self._buffer = deque()
-        self._counter = Counter()
+    def _init_variable(self) -> None:
+        self._buffer: deque[Any] = deque()
+        self._counter: Counter[int] = Counter()
 
     _init_indexed = _init_variable
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         # remove oldest value before appending new to buffer
         self._remove_old()
         self._counter[new] += 1
         self._buffer.append(new)
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._counter[new] += 1
         self._buffer.append(new)
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
         self._counter -= Counter([old])
 
     @property
-    def current_value(self):
+    def current_value(self) -> int:
         return len(self._counter)
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)

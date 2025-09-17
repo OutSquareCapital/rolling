@@ -1,14 +1,14 @@
 from collections import Counter, deque
 from itertools import islice
-
-from .base import RollingObject
-
+from collections.abc import Iterable
+from .base import RollingObject, WindowType
+from typing import Any
 
 DEF_BASE = 719
 DEF_MOD = 2 ** 61 - 1
 
 
-def polynomial_hash_sequence(seq, base=DEF_BASE, mod=DEF_MOD):
+def polynomial_hash_sequence(seq, base: int=DEF_BASE, mod: int=DEF_MOD) -> int:
     """
     Compute the polynomial hash of a sequence.
 
@@ -65,7 +65,7 @@ class PolynomialHash(RollingObject):
     """
 
     def __init__(
-        self, iterable, window_size, window_type="fixed", base=DEF_BASE, mod=DEF_MOD
+        self, iterable: Iterable[Any], window_size: int, window_type: WindowType="fixed", base=DEF_BASE, mod=DEF_MOD
     ):
         self._hash = 0
         self._base = base
@@ -96,11 +96,11 @@ class PolynomialHash(RollingObject):
         self._add_new(new)
 
     @property
-    def current_value(self):
+    def current_value(self) -> int:
         return self._hash
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
 
     def _init_indexed(self):

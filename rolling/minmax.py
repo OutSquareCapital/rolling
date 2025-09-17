@@ -137,7 +137,7 @@ class Max(RollingObject):
             self._add_new(new)
 
     def _init_variable(self):
-        self._buffer = deque()
+        self._buffer: deque[int] = deque()
         self._i = -1
         self._window_obs = 0
 
