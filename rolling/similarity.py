@@ -1,8 +1,7 @@
 from collections import Counter, deque
 from itertools import islice
-from collections.abc import Hashable, Iterable, Sequence
+from collections.abc import Hashable, Iterable, Sequence, Callable
 from typing import Any
-from collections.abc import Callable
 from .base import RollingObject, WindowType
 
 
