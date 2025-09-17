@@ -1,10 +1,11 @@
 from collections import deque
 from itertools import islice
-
+from collections.abc import Iterable
+from typing import Any
 from rolling.base import RollingObject
 from rolling.structures.skiplist import IndexableSkiplist
 from rolling.structures.sortedlist import SortedList
-
+from base import WindowType, Tracker
 
 class Median(RollingObject):
     """
@@ -49,20 +50,17 @@ class Median(RollingObject):
     """
     def __init__(
         self,
-        iterable,
-        window_size,
-        window_type="fixed",
-        tracker="sortedlist",
-    ):
+        iterable: Iterable[Any],
+        window_size: int,
+        window_type: WindowType="fixed",
+        tracker: Tracker="sortedlist",
+    ) -> None:
 
         self._buffer = deque()
         if tracker == "sortedlist":
             self._tracker = SortedList()
         elif tracker == "skiplist":
             self._tracker = IndexableSkiplist(window_size)
-        else:
-            raise ValueError(f"tracker must be one of 'skiplist' or 'sortedlist'")
-
         super().__init__(iterable, window_size, window_type)
 
     def _init_fixed(self):
@@ -87,17 +85,17 @@ class Median(RollingObject):
 
     _init_indexed = _init_variable
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         old = self._buffer.popleft()
         self._tracker.remove(old)
         self._tracker.insert(new)
         self._buffer.append(new)
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._tracker.insert(new)
         self._buffer.append(new)
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
         self._tracker.remove(old)
 
@@ -110,6 +108,6 @@ class Median(RollingObject):
             return (self._tracker[i] + self._tracker[i - 1]) / 2
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
 

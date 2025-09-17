@@ -1,9 +1,10 @@
 from collections import deque
 from itertools import islice
-
+from collections.abc import Iterable
+from typing import Any
 from rolling.base import RollingObject
 from rolling.structures.bicounter import BiCounter
-
+from base import WindowType
 
 class Mode(RollingObject):
     """
@@ -45,12 +46,12 @@ class Mode(RollingObject):
     is not unique.
 
     """
-    def __init__(self, iterable, window_size, window_type="fixed", return_count=False):
+    def __init__(self, iterable: Iterable[Any], window_size: int, window_type: WindowType="fixed", return_count: bool=False) -> None:
         self.return_count = return_count
         self._bicounter = BiCounter()
         super().__init__(iterable, window_size, window_type)
 
-    def _init_fixed(self):
+    def _init_fixed(self) -> None:
         self._buffer = deque(maxlen=self.window_size)
         for item in islice(self._iterator, self.window_size - 1):
             self._add_new(item)
@@ -64,17 +65,17 @@ class Mode(RollingObject):
 
     _init_indexed = _init_variable
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         old = self._buffer.popleft()
         self._bicounter.decrement(old)
         self._bicounter.increment(new)
         self._buffer.append(new)
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._bicounter.increment(new)
         self._buffer.append(new)
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
         self._bicounter.decrement(old)
 
@@ -86,7 +87,7 @@ class Mode(RollingObject):
             return self._bicounter.get_most_common()
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
 
 

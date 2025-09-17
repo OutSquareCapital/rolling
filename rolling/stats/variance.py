@@ -1,9 +1,10 @@
 from collections import deque
 from itertools import islice
 from math import sqrt
-
+from collections.abc import Iterable
+from typing import Any
 from rolling.base import RollingObject
-
+from base import WindowType
 
 class Var(RollingObject):
     """
@@ -39,7 +40,7 @@ class Var(RollingObject):
     windows), the variance is computed as NaN.
 
     """
-    def __init__(self, iterable, window_size, window_type="fixed", ddof=1):
+    def __init__(self, iterable: Iterable[Any], window_size: int, window_type: WindowType="fixed", ddof: int=1):
         self.ddof = ddof
         self._mean = 0.0  # mean of values
         self._sslm = 0.0  # sum of squared values less the mean
@@ -57,25 +58,25 @@ class Var(RollingObject):
         # the first call to update returns the correct value
         self._buffer.appendleft(self._mean)
 
-    def _init_variable(self):
+    def _init_variable(self) -> None:
         self._buffer = deque(maxlen=self.window_size)
 
-    def _init_indexed(self):
+    def _init_indexed(self) -> None:
         self._buffer = deque()
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._buffer.append(new)
         delta = new - self._mean
         self._mean += delta / self._obs
         self._sslm += delta * (new - self._mean)
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
         delta = old - self._mean
         self._mean -= delta / self._obs
         self._sslm -= delta * (old - self._mean)
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         old = self._buffer[0]
         self._buffer.append(new)
         delta = new - old
@@ -95,7 +96,7 @@ class Var(RollingObject):
             return self._sslm / (self._obs - self.ddof)
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
 
 

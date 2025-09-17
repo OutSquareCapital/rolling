@@ -52,7 +52,7 @@ class Skew(RollingObject):
         # the first call to update returns the correct value
         self._buffer.appendleft(0)
 
-    def _init_variable(self):
+    def _init_variable(self) -> None:
         if self.window_size <= 2:
             raise ValueError("window_size must be greater than 2")
 
@@ -61,27 +61,27 @@ class Skew(RollingObject):
         self._x2 = 0.0
         self._x3 = 0.0
 
-    def _init_indexed(self):
+    def _init_indexed(self) -> None:
         self._buffer = deque()
         self._x1 = 0.0
         self._x2 = 0.0
         self._x3 = 0.0
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._buffer.append(new)
 
         self._x1 += new
         self._x2 += new * new
         self._x3 += new * new * new
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
 
         self._x1 -= old
         self._x2 -= old * old
         self._x3 -= old * old * old
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         old = self._buffer[0]
         self._buffer.append(new)
 

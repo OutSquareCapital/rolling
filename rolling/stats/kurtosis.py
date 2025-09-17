@@ -35,7 +35,7 @@ class Kurtosis(RollingObject):
 
     """
 
-    def _init_fixed(self):
+    def _init_fixed(self) -> None:
         if self.window_size <= 3:
             raise ValueError("window_size must be greater than 3")
 
@@ -52,7 +52,7 @@ class Kurtosis(RollingObject):
         # the first call to update returns the correct value
         self._buffer.appendleft(0)
 
-    def _init_variable(self):
+    def _init_variable(self) -> None:
         if self.window_size <= 3:
             raise ValueError("window_size must be greater than 3")
 
@@ -62,14 +62,14 @@ class Kurtosis(RollingObject):
         self._x3 = 0.0
         self._x4 = 0.0
 
-    def _init_indexed(self):
+    def _init_indexed(self) -> None:
         self._buffer = deque()
         self._x1 = 0.0
         self._x2 = 0.0
         self._x3 = 0.0
         self._x4 = 0.0
 
-    def _add_new(self, new):
+    def _add_new(self, new) -> None:
         self._buffer.append(new)
 
         self._x1 += new
@@ -77,7 +77,7 @@ class Kurtosis(RollingObject):
         self._x3 += new ** 3
         self._x4 += new ** 4
 
-    def _remove_old(self):
+    def _remove_old(self) -> None:
         old = self._buffer.popleft()
 
         self._x1 -= old
@@ -85,7 +85,7 @@ class Kurtosis(RollingObject):
         self._x3 -= old ** 3
         self._x4 -= old ** 4
 
-    def _update_window(self, new):
+    def _update_window(self, new) -> None:
         old = self._buffer[0]
         self._buffer.append(new)
 
@@ -120,5 +120,5 @@ class Kurtosis(RollingObject):
         return K / ((N - 2) * (N - 3))
 
     @property
-    def _obs(self):
+    def _obs(self) -> int:
         return len(self._buffer)
