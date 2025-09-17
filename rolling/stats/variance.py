@@ -4,7 +4,7 @@ from math import sqrt
 from collections.abc import Iterable
 from typing import Any
 from rolling.base import RollingObject
-from base import WindowType
+from ..base import WindowType
 
 class Var(RollingObject):
     """

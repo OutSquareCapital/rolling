@@ -5,7 +5,7 @@ from typing import Any
 from rolling.base import RollingObject
 from rolling.structures.skiplist import IndexableSkiplist
 from rolling.structures.sortedlist import SortedList
-from base import WindowType, Tracker
+from ..base import WindowType, Tracker
 
 class Median(RollingObject):
     """
