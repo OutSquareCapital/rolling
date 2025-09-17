@@ -1,10 +1,12 @@
 import abc
 from collections import deque
-from collections.abc import Iterator
+from collections.abc import Iterator, Iterable
 from itertools import chain
+from typing import Any, Literal
 
-
-class RollingObject(Iterator):
+WindowType = Literal["fixed", "variable", "indexed"]
+Tracker = Literal["sortedlist", "skiplist"]
+class RollingObject(Iterator[Any]):
     """
     Baseclass for rolling iterator objects.
 
@@ -31,10 +33,10 @@ class RollingObject(Iterator):
 
     """
 
-    def __init__(self, iterable, window_size, window_type="fixed"):
+    def __init__(self, iterable: Iterable[Any], window_size: int, window_type: WindowType="fixed"):
         self.window_type = window_type
         self.window_size = _validate_window_size(window_size, window_type)
-        self._iterator = iter(iterable)
+        self._iterator: Iterator[Any] = iter(iterable)
         self._filled = self.window_type == "fixed"
 
         if window_type == "fixed":
@@ -47,11 +49,8 @@ class RollingObject(Iterator):
             # Keep track of all indexes that we encounter. Assumes that all
             # values we encounter will be stored in the same order. If not,
             # the subtype will need to implement its own _next_indexed() method.
-            self.index_buffer = deque()
+            self.index_buffer: deque[Any] = deque()
             self._init_indexed()
-
-        else:
-            raise ValueError(f"Unknown window_type '{window_type}'")
 
     def __repr__(self):
         return "Rolling(operation='{}', window_size={}, window_type='{}')".format(
@@ -116,7 +115,7 @@ class RollingObject(Iterator):
 
         raise NotImplementedError(f"next() not implemented for {self.window_type}")
 
-    def extend(self, iterable):
+    def extend(self, iterable: Iterable[Any]):
         """
         Extend the iterator being consumed with a new iterable.
 
@@ -196,13 +195,11 @@ class RollingObject(Iterator):
         pass
 
 
-def _validate_window_size(window_size, window_type):
+def _validate_window_size(window_size: int, window_type: WindowType) -> int:
     """
     Check if k is a positive integer
     """
     if window_type in {"fixed", "variable"}:
-        if not isinstance(window_size, int):
-            raise TypeError(f"window_size must be integer type, got {type(window_size).__name__}")
         if window_size <= 0:
             raise ValueError("window_size must be positive")
     return window_size
