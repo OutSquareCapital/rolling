@@ -11,3 +11,27 @@ from rolling.similarity import JaccardIndex
 from rolling.stats import Mean, Var, Std, Median, Mode, Skew, Kurtosis
 
 __version__ = "0.5.0"
+__all__ = [
+    "Apply",
+    "ApplyPairwise",
+    "Nunique",
+    "Product",
+    "Sum",
+    "Entropy",
+    "PolynomialHash",
+    "All",
+    "Any",
+    "Match",
+    "Min",
+    "Max",
+    "MinHeap",
+    "Monotonic",
+    "JaccardIndex",
+    "Mean",
+    "Var",
+    "Std",
+    "Median",
+    "Mode",
+    "Skew",
+    "Kurtosis",
+]
